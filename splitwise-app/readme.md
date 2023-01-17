@@ -275,4 +275,16 @@ Here are some examples of test cases and sample inputs that you could use to tes
 
 ```
 
+Splitwise Simplify Debt Algorithm
+
+Splitwise uses a simplified debt algorithm to calculate the amount that each person in a group owes to the others. The algorithm works by first calculating the balance for each person in the group. This is done by dividing the total amount of each expense by the number of people who shared the expense, and then adding or subtracting the resulting amount from each person's balance, depending on whether they were a payer or a spender.
+
+Once the balances are calculated, the algorithm then calculates the amount each person owes to the others by subtracting the average balance from each person's balance. This ensures that the sum of all the debts is zero, as the person who owes the most will be owed by the person who owes the least.
+
+The algorithm can be implemented in java by creating a class that represents the group, and in that class add methods for adding expenses, adding users, and calculating the balances and debts. The methods for calculating balances and debts can use the formulas described above to do the calculations.
+
+The algorithm can be further optimized by using data structures such as HashMap to store the balances, and to improve the performance by avoiding multiple iterations over the data.
+
+It's important to note that this is a simplified algorithm and it may not work well with more complex scenarios, and there may be other ways to implement this algorithm with better performance and accuracy.
+
 
