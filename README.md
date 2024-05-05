@@ -268,5 +268,3 @@ Explanation:
 - `ConcreteBuilder` implements `Builder` to build the parts of the product.
 - `Director` directs the construction process using a builder instance.
 - Clients can use the director to construct the product using a specific builder implementation.
-
-These are just a few examples of design patterns in Go. Each pattern provides a solution to a recurring design problem and promotes code reusability, flexibility, and maintainability.
