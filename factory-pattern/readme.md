@@ -56,6 +56,50 @@ shape2.draw();
 The Factory Design Pattern is a powerful pattern that allows for flexibility and maintainability in the code by creating objects through a common interface, without the client code needing to know about the specific classes that are instantiated. This pattern also allows for easy addition of new classes without modifying the factory or the client code. This pattern is widely used in various areas such as GUI, databases, and other systems that require dynamic object creation.
 
 
+```
+python reference
+
+
+# Interface-like implementation for shapes
+class Shape:
+    def draw(self):
+        raise NotImplementedError("draw() method must be implemented in subclasses")
+
+# Concrete class for Circle
+class Circle(Shape):
+    def draw(self):
+        print("Circle: draw() method")
+
+# Concrete class for Square
+class Square(Shape):
+    def draw(self):
+        print("Square: draw() method")
+
+# Factory class for creating shapes
+class ShapeFactory:
+    @staticmethod
+    def create_shape(shape_type):
+        if shape_type == "circle":
+            return Circle()
+        elif shape_type == "square":
+            return Square()
+        else:
+            raise ValueError("Invalid shape type")
+
+# Usage
+if __name__ == "__main__":
+    circle = ShapeFactory.create_shape("circle")
+    square = ShapeFactory.create_shape("square")
+
+    circle.draw()  # Output: Circle: draw() method
+    square.draw()  # Output: Square: draw() method
+
+
+
+```
+
+
+
 
 
 
