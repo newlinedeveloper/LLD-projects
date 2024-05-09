@@ -81,6 +81,25 @@ Explanation:
 - The `once` sync.Once ensures that the initialization code inside `GetInstance` is executed only once, even in a concurrent environment.
 - When `GetInstance` is called for the first time, it creates a new instance of `Database`, and subsequent calls return the same instance.
 
+```
+# python reference
+class Singleton:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+# Usage
+singleton1 = Singleton()
+singleton2 = Singleton()
+
+print(singleton1 is singleton2)  # Output: True
+
+
+```
+
 2. Factory Method Pattern:
 
 ```go
