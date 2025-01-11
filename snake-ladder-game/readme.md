@@ -1,122 +1,266 @@
-A low-level design of a Snake and Ladder game in Java would involve several components such as a Game class, a Board class, a Player class, a Dice class, and a Snake and Ladder class.
+### Low-Level Design (LLD) for Snake and Ladder Game
 
-Here is an example of a possible low-level design for a Snake and Ladder game using Java:
+#### Requirements:
+- The game is played on a board with 100 squares.
+- Players take turns to roll a dice and move their piece forward.
+- If a player lands on the bottom of a ladder, they move up to the top of the ladder.
+- If a player lands on the mouth of a snake, they move down to the tail of the snake.
+- The first player to reach square 100 wins the game.
 
+#### Core Components:
+1. **Game**: Manages the game flow, players, and checks for winning conditions.
+2. **Board**: Represents the game board with snakes and ladders.
+3. **Player**: Represents a player.
+4. **Dice**: Represents the dice used to generate random moves.
+5. **Cell**: Represents each cell on the board, which may contain a snake or ladder.
+6. **Display**: Strategy pattern for displaying the game board.
+
+#### Design Pattern Used:
+- **Strategy Pattern**: Used for different display strategies (e.g., console display, GUI).
+- **Singleton Pattern**: Used for the dice to ensure only one instance is used across the game.
+
+---
+
+### Class Diagram:
+
+```plaintext
+Game
+  - board: Board
+  - players: [Player]
+  + start_game()
+  + move_player(player: Player)
+
+Board
+  - cells: [Cell]
+  + initialize_board(snakes: [int], ladders: [int])
+  + get_destination(position: int) -> int
+
+Cell
+  - position: int
+  - jump: int (0 if no snake or ladder)
+
+Player
+  - name: str
+  - position: int
+
+Dice
+  + roll() -> int
+
+Display (Interface)
+  + show(players: [Player], board: Board)
 ```
 
-// GameBoard class
-public class GameBoard {
-    private int[] board;
-    private int numSquares;
-    private int[] snakes;
-    private int[] ladders;
+---
 
-    public GameBoard(int numSquares, int[] snakes, int[] ladders) {
-        this.numSquares = numSquares;
-        this.board = new int[numSquares];
-        this.snakes = snakes;
-        this.ladders = ladders;
-    }
+### Python Code
 
-    public int movePlayer(int currentPosition, int roll) {
-        int newPosition = currentPosition + roll;
-        if (newPosition > numSquares) {
-            return currentPosition;
-        }
-        if (snakes[newPosition] != 0) {
-            newPosition = snakes[newPosition];
-        } else if (ladders[newPosition] != 0) {
-            newPosition = ladders[newPosition];
-        }
-        return newPosition;
-    }
-}
+```python
+import random
 
-// Dice class
-import java.util.Random;
-
-public class Dice {
-    private Random random;
-
-    public Dice() {
-        this.random = new Random();
-    }
-
-    public int roll() {
-        return random.nextInt(6) + 1;
-    }
-}
-
-// Player class
-public class Player {
-    private String name;
-    private int position;
-
-    public Player(String name) {
-        this.name = name;
-        this.position = 0;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public int getPosition() {
-        return this.position;
-    }
-
-    public void setPosition(int position) {
-        this.position = position;
-    }
-}
-
-// SnakeAndLadderGame class
-public class SnakeAndLadderGame {
-    private GameBoard board;
-    private Dice dice;
-    private Player[] players;
-
-    public SnakeAndLadderGame(int numSquares, int[] snakes, int[] ladders, String[] playerNames) {
-        this.board = new GameBoard(numSquares, snakes, ladders);
-        this.dice = new Dice();
-        this.players = new Player[playerNames.length];
-        for (int i = 0; i < playerNames.length; i++) {
-            this.players[i] = new Player(playerNames[i]);
-        }
-    }
-
-    public void play() {
-        boolean gameOver = false;
-        while (!gameOver) {
-            for (int i = 0; i < players.length; i++) {
-                Player currentPlayer = players[i];
-                int roll = dice.roll();
-                System.out.println(currentPlayer.getName() + " rolled a " + roll);
-                int newPosition = board.movePlayer(currentPlayer.getPosition(), roll);
-                currentPlayer.setPosition(newPosition);
-                System.out.println(currentPlayer.getName() + " is now on square " + currentPlayer.getPosition());
-                if (currentPlayer.getPosition() == board.getNumSquares()) {
-                    gameOver = true
-                }
-            }
-        }
-        System.out.println("Game Over! The winner is " + currentPlayer.getName());
-    }
-
-    public static void main(String[] args) {
-        int numSquares = 100;
-        int[] snakes = {17, 54, 62, 64, 87, 93, 95, 98};
-        int[] ladders = {1, 4, 9, 21, 28, 36, 51, 71};
-        String[] playerNames = {"Player 1", "Player 2"};
-        SnakeAndLadderGame game = new SnakeAndLadderGame(numSquares, snakes, ladders, playerNames);
-        game.play();
-    }
-}
+class Dice:
+    @staticmethod
+    def roll():
+        return random.randint(1, 6)
 
 
+class Cell:
+    def __init__(self, position):
+        self.position = position
+        self.jump = 0  # 0 means no snake or ladder
+
+
+class Board:
+    def __init__(self):
+        self.cells = [Cell(i) for i in range(101)]
+
+    def initialize_board(self, snakes, ladders):
+        for start, end in snakes.items():
+            self.cells[start].jump = end - start
+        for start, end in ladders.items():
+            self.cells[start].jump = end - start
+
+    def get_destination(self, position):
+        cell = self.cells[position]
+        return position + cell.jump
+
+
+class Player:
+    def __init__(self, name):
+        self.name = name
+        self.position = 0
+
+
+class Display:
+    def show(self, players, board):
+        raise NotImplementedError
+
+
+class ConsoleDisplay(Display):
+    def show(self, players, board):
+        for player in players:
+            print(f"{player.name} is at position {player.position}")
+
+
+class Game:
+    def __init__(self, players, board, display):
+        self.players = players
+        self.board = board
+        self.display = display
+
+    def move_player(self, player):
+        dice_value = Dice.roll()
+        new_position = player.position + dice_value
+        if new_position > 100:
+            return
+        new_position = self.board.get_destination(new_position)
+        player.position = new_position
+
+    def start_game(self):
+        while True:
+            for player in self.players:
+                self.move_player(player)
+                self.display.show(self.players, self.board)
+                if player.position == 100:
+                    print(f"{player.name} wins!")
+                    return
+
+
+# Example usage
+snakes = {16: 6, 47: 26, 49: 11, 56: 53, 62: 19, 64: 60, 87: 24, 93: 73, 95: 75, 98: 78}
+ladders = {1: 38, 4: 14, 9: 31, 21: 42, 28: 84, 36: 44, 51: 67, 71: 91, 80: 100}
+
+board = Board()
+board.initialize_board(snakes, ladders)
+
+player1 = Player("Alice")
+player2 = Player("Bob")
+players = [player1, player2]
+
+display = ConsoleDisplay()
+game = Game(players, board, display)
+game.start_game()
 ```
 
+---
 
-In this example, the main method creates a new SnakeAndLadderGame object and starts the game by calling the play() method. The game board has 100 squares, 8 snakes and 8 ladders, and 2 players. The game continues until one of the players reaches the last square and wins the game.
+### Golang Code
 
-In this code, I have just hardcoded the values for snakes, ladders, and player names, you can change it as per your requirement. Also, this is a basic implementation of the game and you can add more functionality to it like keeping track of the score, displaying a graphical board, etc.
+```go
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+type Cell struct {
+	position int
+	jump     int // 0 means no snake or ladder
+}
+
+type Board struct {
+	cells [101]Cell
+}
+
+func NewBoard() *Board {
+	b := &Board{}
+	for i := 0; i <= 100; i++ {
+		b.cells[i] = Cell{position: i, jump: 0}
+	}
+	return b
+}
+
+func (b *Board) InitializeBoard(snakes, ladders map[int]int) {
+	for start, end := range snakes {
+		b.cells[start].jump = end - start
+	}
+	for start, end := range ladders {
+		b.cells[start].jump = end - start
+	}
+}
+
+func (b *Board) GetDestination(position int) int {
+	return position + b.cells[position].jump
+}
+
+type Player struct {
+	name     string
+	position int
+}
+
+type Dice struct{}
+
+func (d *Dice) Roll() int {
+	rand.Seed(time.Now().UnixNano())
+	return rand.Intn(6) + 1
+}
+
+type Display interface {
+	Show(players []*Player)
+}
+
+type ConsoleDisplay struct{}
+
+func (d ConsoleDisplay) Show(players []*Player) {
+	for _, player := range players {
+		fmt.Printf("%s is at position %d\n", player.name, player.position)
+	}
+}
+
+type Game struct {
+	board    *Board
+	players  []*Player
+	display  Display
+}
+
+func NewGame(players []*Player, board *Board, display Display) *Game {
+	return &Game{
+		board:   board,
+		players: players,
+		display: display,
+	}
+}
+
+func (g *Game) MovePlayer(player *Player) {
+	dice := &Dice{}
+	diceValue := dice.Roll()
+	newPosition := player.position + diceValue
+	if newPosition > 100 {
+		return
+	}
+	newPosition = g.board.GetDestination(newPosition)
+	player.position = newPosition
+}
+
+func (g *Game) StartGame() {
+	for {
+		for _, player := range g.players {
+			g.MovePlayer(player)
+			g.display.Show(g.players)
+			if player.position == 100 {
+				fmt.Printf("%s wins!\n", player.name)
+				return
+			}
+		}
+	}
+}
+
+func main() {
+	snakes := map[int]int{16: 6, 47: 26, 49: 11, 56: 53, 62: 19, 64: 60, 87: 24, 93: 73, 95: 75, 98: 78}
+	ladders := map[int]int{1: 38, 4: 14, 9: 31, 21: 42, 28: 84, 36: 44, 51: 67, 71: 91, 80: 100}
+
+	board := NewBoard()
+	board.InitializeBoard(snakes, ladders)
+
+	player1 := &Player{name: "Alice"}
+	player2 := &Player{name: "Bob"}
+	players := []*Player{player1, player2}
+
+	display := ConsoleDisplay{}
+	game := NewGame(players, board, display)
+	game.StartGame()
+}
+```
+
+---
